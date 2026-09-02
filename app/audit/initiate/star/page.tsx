@@ -2,7 +2,7 @@
 import { useState, useRef, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { AppShell } from '@/components/layout/AppShell'
-import Link from 'next/link'
+import Link from 'next/dist/client/link'
 import { Upload, X, FileText, Loader2, CheckCircle2 } from 'lucide-react'
 import { config } from '@/lib/config'
 import { TokenStore } from '@/services/api'
@@ -294,14 +294,12 @@ export default function InitiateStarAuditPage() {
 
           {/* Actions */}
           <div className="mt-6 flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-[13.5px] font-semibold rounded transition-colors"
+            <Link
+              href="audit/initiate/star/next"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[13.5px] font-semibold rounded transition-colors"
             >
-              {submitting && <Loader2 size={14} className="animate-spin" />}
-              {submitting ? 'Submitting…' : 'Next'}
-            </button>
+              Next
+            </Link>
             <Link href="/audit/initiate" className="text-[13px] text-slate-500 hover:text-slate-700">
               Cancel
             </Link>
