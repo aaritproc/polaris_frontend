@@ -7,10 +7,11 @@ import {
   Loader2, FileText, ExternalLink, CheckCircle2,
   AlertTriangle, Clock, ChevronRight, UserCheck,
 } from 'lucide-react'
-import { config } from '@/lib/config'
-import { TokenStore } from '@/services/api'
+// import { config } from '@/lib/config'
+// import { TokenStore } from '@/services/api'
 import { useCurrentUser } from '@/hooks'
 import type { AuditFormDetail } from '@/types/polaris'
+import { mockAuditDetails, mockAuditors } from '@/utils/mockData'
 
 function DetailField({ label, value }: { label: string; value?: string | null }) {
   return (
@@ -48,8 +49,14 @@ function AiStatusPill({ status }: { status: string }) {
 }
 
 // ─── Assign Auditor Panel (admin only) ────────────────────────────────────────
-function AssignAuditorPanel({ sessionId, currentAuditorName }: {
-  sessionId: string; currentAuditorName?: string | null
+function AssignAuditorPanel({
+  sessionId,
+  currentAuditorName,
+  currentAuditorEmail,
+}: {
+  sessionId: string
+  currentAuditorName?: string | null
+  currentAuditorEmail?: string | null
 }) {
   const [auditors, setAuditors] = useState<{ user_id: string; user_name: string; azure_email: string }[]>([])
   const [selected, setSelected] = useState('')
@@ -57,25 +64,28 @@ function AssignAuditorPanel({ sessionId, currentAuditorName }: {
   const [done, setDone] = useState(false)
 
   useEffect(() => {
-    fetch(`${config.apiUrl}/polaris/auditors`, {
-      headers: { Authorization: `Bearer ${TokenStore.getAccess() ?? ''}` },
-    })
-      .then(r => r.ok ? r.json() : [])
-      .then(setAuditors)
-      .catch(() => {})
-  }, [])
+      setAuditors(mockAuditors)
+
+    if (currentAuditorEmail) {
+      const currentAuditor = mockAuditors.find(
+        auditor => auditor.azure_email === currentAuditorEmail
+      )
+
+      if (currentAuditor) {
+        setSelected(currentAuditor.user_id)
+      }
+    }
+  }, [currentAuditorEmail])
 
   const assign = async () => {
     if (!selected) return
+
     setSaving(true)
-    try {
-      const res = await fetch(`${config.apiUrl}/polaris/audit/${sessionId}/assign-auditor`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TokenStore.getAccess() ?? ''}` },
-        body: JSON.stringify({ auditor_id: selected }),
-      })
-      if (res.ok) setDone(true)
-    } finally { setSaving(false) }
+
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    setDone(true)
+    setSaving(false)
   }
 
   return (
@@ -97,7 +107,7 @@ function AssignAuditorPanel({ sessionId, currentAuditorName }: {
         <div className="flex gap-3 items-center">
           <select value={selected} onChange={e => setSelected(e.target.value)}
             className="flex-1 px-3 py-2 text-[13.5px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">— Select an auditor —</option>
+            <option value="">{currentAuditorName}</option>
             {auditors.map(a => (
               <option key={a.user_id} value={a.user_id}>{a.user_name} ({a.azure_email})</option>
             ))}
@@ -122,18 +132,21 @@ export default function ProjectDetailsPage() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const { data: currentUser } = useCurrentUser()
   const [detail, setDetail] = useState<AuditFormDetail | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!sessionId) return
-    fetch(`${config.apiUrl}/polaris/audit/${sessionId}/details`, {
-      headers: { Authorization: `Bearer ${TokenStore.getAccess() ?? ''}` },
-    })
-      .then(r => r.ok ? r.json() : Promise.reject(`Error ${r.status}`))
-      .then(setDetail)
-      .catch(e => setError(String(e)))
-      .finally(() => setLoading(false))
+
+    const mockDetail = mockAuditDetails[sessionId]
+
+    if (mockDetail) {
+      setDetail(mockDetail)
+      setError(null)
+    } else {
+      setDetail(null)
+      setError('Audit not found')
+    }
   }, [sessionId])
 
   if (loading) return <AppShell><div className="flex items-center justify-center min-h-[50vh]"><Loader2 size={28} className="animate-spin text-blue-500" /></div></AppShell>
@@ -168,7 +181,7 @@ export default function ProjectDetailsPage() {
       </div>
 
       {/* Admin: assign auditor panel */}
-      {isAdmin && <AssignAuditorPanel sessionId={sessionId!} currentAuditorName={(detail as any).assigned_auditor_name} />}
+      {isAdmin && <AssignAuditorPanel sessionId={sessionId!} currentAuditorName={detail.assigned_auditor_name} currentAuditorEmail={detail.assigned_auditor_email} />}
 
       {/* AI Audit Status */}
       <div className="bg-white border border-slate-200 rounded-lg shadow-sm mb-5">

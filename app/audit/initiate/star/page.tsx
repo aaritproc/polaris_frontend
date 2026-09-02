@@ -300,7 +300,7 @@ export default function InitiateStarAuditPage() {
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-[13.5px] font-semibold rounded transition-colors"
             >
               {submitting && <Loader2 size={14} className="animate-spin" />}
-              {submitting ? 'Submitting…' : 'Get AI Review'}
+              {submitting ? 'Submitting…' : 'Next'}
             </button>
             <Link href="/audit/initiate" className="text-[13px] text-slate-500 hover:text-slate-700">
               Cancel

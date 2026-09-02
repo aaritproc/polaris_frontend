@@ -72,6 +72,8 @@ export interface AuditFormDetail {
   phase?: string | null
   sharepoint_link?: string | null
   project_details?: string | null
+  assigned_auditor_name?: string | null
+  assigned_auditor_email?: string | null
 
   // documents
   documents: AuditDocumentRef[]

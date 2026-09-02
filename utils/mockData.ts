@@ -185,6 +185,7 @@ export const mockLiveLog: LiveLogEntry[] = [
 
 import type { AuditQueueRow } from '@/types/polaris'
 import type { QueueRow } from '@/app/audit/start/page'
+import type { AuditFormDetail } from '@/types/polaris'
 export const mockAuditQueue: AuditQueueRow[] = [
   {
     session_id: 'a001',
@@ -299,5 +300,255 @@ export const mockQueue: QueueRow[] = [
     overall_status: 'pending',
     assigned_auditor_name: null,
     assigned_auditor_email: null,
+  },
+]
+
+export const mockAuditDetails: Record<string, AuditFormDetail> = {
+  'AUD-001': {
+    session_id: 'AUD-001',
+    audit_type: 'STAR',
+
+    ai_audit_status: 'done',
+    ai_audit_score: 4.3,
+    ai_audit_report_url: 'https://example.com/reports/AUD-001',
+
+    submitted_at: '2026-08-18T00:00:00.000Z',
+    submitted_by: 'Priya Sharma',
+
+    project_name: 'Project Atlas',
+    client_name: 'Acme Corporation',
+    project_code: 'ATL-001',
+    assigned_auditor_name: 'Priya Sharma',
+    assigned_auditor_email: 'priya.sharma@example.com',
+    project_manager: 'John Smith',
+
+    sow_signed_date: '2026-08-15',
+    project_start_date: '2026-09-05',
+    project_end_date: '2026-12-20',
+    actual_project_start_date: null,
+    estimated_project_end_date: '2026-12-20',
+
+    project_duration_months: '4',
+    project_duration_weeks: '16',
+
+    estimated_budget: '$250,000',
+    estimated_project_margin: '28%',
+    consumed_budget: '$75,000',
+    current_project_margin: '25%',
+
+    discount_provided: 'Yes',
+    discount_percentage: '10%',
+    discount_approver_email: 'manager@example.com',
+
+    phase: 'Execution',
+
+    sharepoint_link: '#',
+    project_details: 'Digital transformation project for Acme Corporation.',
+
+    documents: [],
+
+    overall_status: 'pending',
+  },
+
+  'AUD-002': {
+    session_id: 'AUD-002',
+    audit_type: 'ISO 27001',
+
+    ai_audit_status: 'auditing',
+    ai_audit_score: null,
+    ai_audit_report_url: null,
+
+    submitted_at: '2026-08-21T00:00:00.000Z',
+    submitted_by: 'Rahul Mehta',
+
+    project_name: 'Project Phoenix',
+    client_name: 'Globex Industries',
+    project_code: 'PHX-002',
+    assigned_auditor_name: 'Rahul Mehta',
+    assigned_auditor_email: 'rahul.mehta@example.com',
+    project_manager: 'Sarah Johnson',
+
+    sow_signed_date: '2026-08-18',
+    project_start_date: '2026-09-08',
+    project_end_date: '2027-01-15',
+    actual_project_start_date: null,
+    estimated_project_end_date: '2027-01-15',
+
+    project_duration_months: '5',
+    project_duration_weeks: '20',
+
+    estimated_budget: '$180,000',
+    estimated_project_margin: '30%',
+    consumed_budget: '$45,000',
+    current_project_margin: '27%',
+
+    discount_provided: 'No',
+    discount_percentage: null,
+    discount_approver_email: null,
+
+    phase: 'Planning',
+
+    sharepoint_link: '#',
+    project_details: 'Security and compliance implementation project.',
+
+    documents: [],
+
+    overall_status: 'under_review',
+  },
+
+  'AUD-003': {
+    session_id: 'AUD-003',
+    audit_type: 'STAR',
+
+    ai_audit_status: 'fetching',
+    ai_audit_score: null,
+    ai_audit_report_url: null,
+
+    submitted_at: '2026-08-25T00:00:00.000Z',
+    submitted_by: 'Ananya Kapoor',
+
+    project_name: 'Project Zenith',
+    client_name: 'Northwind Technologies',
+    project_code: 'ZEN-003',
+    assigned_auditor_name: null,
+    assigned_auditor_email: null,
+    project_manager: 'Michael Brown',
+
+    sow_signed_date: '2026-08-22',
+    project_start_date: '2026-09-12',
+    project_end_date: '2027-02-15',
+    actual_project_start_date: null,
+    estimated_project_end_date: '2027-02-15',
+
+    project_duration_months: '6',
+    project_duration_weeks: '24',
+
+    estimated_budget: '$320,000',
+    estimated_project_margin: '32%',
+    consumed_budget: '$20,000',
+    current_project_margin: '31%',
+
+    discount_provided: 'Yes',
+    discount_percentage: '5%',
+    discount_approver_email: 'director@example.com',
+
+    phase: 'Planning',
+
+    sharepoint_link: '#',
+    project_details: 'Technology modernization and platform transformation project.',
+
+    documents: [],
+
+    overall_status: 'pending',
+  },
+
+  'AUD-004': {
+    session_id: 'AUD-004',
+    audit_type: 'DEX',
+
+    ai_audit_status: 'done',
+    ai_audit_score: 4.7,
+    ai_audit_report_url: 'https://example.com/reports/AUD-004',
+
+    submitted_at: '2026-08-27T00:00:00.000Z',
+    submitted_by: 'Ananya Kapoor',
+
+    project_name: 'Digital Transformation',
+    client_name: 'Wayne Enterprises',
+    project_code: 'WAY-004',
+    assigned_auditor_name: 'Ananya Kapoor',
+    assigned_auditor_email: 'ananya.kapoor@example.com',
+    project_manager: 'Bruce Wayne',
+
+    sow_signed_date: '2026-08-25',
+    project_start_date: '2026-09-15',
+    project_end_date: '2027-01-30',
+    actual_project_start_date: null,
+    estimated_project_end_date: '2027-01-30',
+
+    project_duration_months: '5',
+    project_duration_weeks: '20',
+
+    estimated_budget: '$275,000',
+    estimated_project_margin: '35%',
+    consumed_budget: '$100,000',
+    current_project_margin: '33%',
+
+    discount_provided: 'No',
+    discount_percentage: null,
+    discount_approver_email: null,
+
+    phase: 'Execution',
+
+    sharepoint_link: '#',
+    project_details: 'Enterprise-wide digital transformation initiative.',
+
+    documents: [],
+
+    overall_status: 'completed',
+  },
+
+  'AUD-005': {
+    session_id: 'AUD-005',
+    audit_type: 'STAR',
+
+    ai_audit_status: 'pending',
+    ai_audit_score: null,
+    ai_audit_report_url: null,
+
+    submitted_at: '2026-08-28T00:00:00.000Z',
+    submitted_by: 'Priya Sharma',
+
+    project_name: 'Cloud Migration',
+    client_name: 'Stark Solutions',
+    project_code: null,
+    assigned_auditor_name: null,
+    assigned_auditor_email: null,
+    project_manager: null,
+
+    sow_signed_date: null,
+    project_start_date: null,
+    project_end_date: null,
+    actual_project_start_date: null,
+    estimated_project_end_date: null,
+
+    project_duration_months: null,
+    project_duration_weeks: null,
+
+    estimated_budget: null,
+    estimated_project_margin: null,
+    consumed_budget: null,
+    current_project_margin: null,
+
+    discount_provided: null,
+    discount_percentage: null,
+    discount_approver_email: null,
+
+    phase: null,
+
+    sharepoint_link: '#',
+    project_details: null,
+
+    documents: [],
+
+    overall_status: 'pending',
+  },
+}
+
+export const mockAuditors = [
+  {
+    user_id: 'auditor-001',
+    user_name: 'Priya Sharma',
+    azure_email: 'priya.sharma@example.com',
+  },
+  {
+    user_id: 'auditor-002',
+    user_name: 'Rahul Mehta',
+    azure_email: 'rahul.mehta@example.com',
+  },
+  {
+    user_id: 'auditor-003',
+    user_name: 'Ananya Kapoor',
+    azure_email: 'ananya.kapoor@example.com',
   },
 ]
