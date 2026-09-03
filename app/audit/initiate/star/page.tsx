@@ -98,24 +98,38 @@ export default function InitiateStarAuditPage() {
     setError(null)
 
     // Basic validation
-    if (!form.client_name || !form.project_name || !form.project_manager || !form.estimated_budget) {
+    if (
+      !form.client_name ||
+      !form.project_name ||
+      !form.project_manager ||
+      !form.estimated_budget
+    ) {
       setError('Please fill in all required fields.')
       return
     }
+
     if (files.length === 0) {
       setError('Please upload at least one document.')
       return
     }
 
     setSubmitting(true)
+
     try {
       const fd = new FormData()
-      Object.entries(form).forEach(([k, v]) => { if (v) fd.append(k, v) })
+
+      Object.entries(form).forEach(([k, v]) => {
+        if (v) fd.append(k, v)
+      })
+
       files.forEach(f => fd.append('files', f))
 
+      // 1. Submit the audit
       const res = await fetch(`${config.apiUrl}/polaris/audit/star`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${TokenStore.getAccess() ?? ''}` },
+        headers: {
+          Authorization: `Bearer ${TokenStore.getAccess() ?? ''}`,
+        },
         body: fd,
       })
 
@@ -125,16 +139,29 @@ export default function InitiateStarAuditPage() {
       }
 
       const data = await res.json()
-            // data = { session_id, sharepoint_item_id, audit_type, project_name, client_name, ... }
 
-      // Navigate to the success/next page, passing both IDs as query params
+      // 2. Send notification email
+      await fetch(`${config.apiUrl}/audit/notify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${TokenStore.getAccess() ?? ''}`,
+        },
+        body: JSON.stringify({
+          fullName: form.project_manager,
+        }),
+      })
+
+      // 3. Navigate to the next page
       router.push(
-        `/audit/initiate/star/next?session_id=${encodeURIComponent(data.session_id)}&item_id=${encodeURIComponent(data.sharepoint_item_id ?? '')}`
+        `/audit/initiate/star/next?session_id=${encodeURIComponent(
+          data.session_id
+        )}&item_id=${encodeURIComponent(data.sharepoint_item_id ?? '')}`
       )
 
     } catch (err: any) {
       setError(err.message ?? 'Submission failed. Please try again.')
-    // } finally {
+    } finally {
       setSubmitting(false)
     }
   }
@@ -299,14 +326,14 @@ export default function InitiateStarAuditPage() {
 
           
           <div className="mt-6 flex items-center gap-3">
-                        {/* Next = submit the form */}
+            {/* Next = submit the form */}
             <button
               type="submit"
               disabled={submitting}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-[13.5px] font-semibold rounded transition-colors"
 
             >
-              {submitting ? <><Loader2 size={15} className="animate-spin" /> Submitting…</> : 'Next'}
+              {submitting ? (<><Loader2 size={15} className="animate-spin" /> Submitting…</>) : ('Next')}
             </button>
 
             <Link href="/audit/initiate" className="text-[13px] text-slate-500 hover:text-slate-700">
