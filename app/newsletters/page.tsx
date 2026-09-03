@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import Link from 'next/dist/client/link'
 import { Newspaper, Archive, ChevronRight } from 'lucide-react'
@@ -38,6 +39,35 @@ function ChoiceCard({
 }
 
 export default function NewslettersPage() {
+  const [latestNewsletter, setLatestNewsletter] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('http://localhost:8000/newsletter/drives')
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch newsletters')
+        }
+        return res.json()
+      })
+      .then(data => {
+        // We'll determine the exact field names once we see the API response
+        console.log(data)
+        const latest = data.sort(
+          (a: any, b: any) =>
+            new Date(b.createdDateTime).getTime() -
+            new Date(a.createdDateTime).getTime()
+        )[0]
+
+        if (latest) {
+          setLatestNewsletter(latest.webUrl)
+        }
+      })
+      .catch(error => {
+        console.error('Newsletter error:', error)
+        setLatestNewsletter(null)
+      })
+  }, [])
+
   return (
     <AppShell>
       {/* Breadcrumb */}
@@ -58,7 +88,7 @@ export default function NewslettersPage() {
           iconColor="bg-blue-50 text-blue-600"
           title="Latest Newsletter"
           description="Read the most recent edition with audit stats, key highlights, and what's coming next."
-          href="#"
+          href={latestNewsletter ?? '#'}
           btnLabel="Read Now"
           btnColor="bg-rose-700 hover:bg-rose-800"
         />
