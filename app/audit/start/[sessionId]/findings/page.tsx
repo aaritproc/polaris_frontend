@@ -761,7 +761,7 @@ export default function UploadFindingsPage() {
       {/* Manual Audit Report */}
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 mb-5">
         <h2 className="text-[15px] font-bold text-slate-800 mb-1">
-          Manual Audit Report
+          Audit Summary Report
         </h2>
 
         <p className="text-[12.5px] text-slate-500 mb-4">
