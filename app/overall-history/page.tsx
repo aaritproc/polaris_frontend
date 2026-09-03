@@ -42,7 +42,7 @@ function AiStatusBadge({ status }: { status: string }) {
     summarising: { cls: 'bg-blue-100 text-blue-700',       label: 'Summarising' },
     exporting:   { cls: 'bg-blue-100 text-blue-700',       label: 'Exporting' },
     uploading:   { cls: 'bg-blue-100 text-blue-700',       label: 'Uploading' },
-    done:        { cls: 'bg-emerald-100 text-emerald-700', label: 'AI Complete' },
+    done:        { cls: 'bg-emerald-100 text-emerald-700', label: 'Complete' },
     failed:      { cls: 'bg-red-100 text-red-700',         label: 'Failed' },
   }
   const { cls, label } = map[status] ?? { cls: 'bg-slate-100 text-slate-500', label: status }
@@ -61,7 +61,7 @@ function AiStatusBadge({ status }: { status: string }) {
 function OverallStatusBadge({ status }: { status: string }) {
   const map: Record<string, { cls: string; label: string }> = {
     pending:      { cls: 'bg-slate-100 text-slate-600',    label: 'Pending' },
-    under_review: { cls: 'bg-blue-100 text-blue-700',      label: 'Under Review' },
+    under_review: { cls: 'bg-blue-100 text-blue-700',      label: 'In Review' },
     completed:    { cls: 'bg-emerald-100 text-emerald-700', label: 'Completed' },
     failed:       { cls: 'bg-red-100 text-red-700',        label: 'Failed' },
   }
