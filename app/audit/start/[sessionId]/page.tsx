@@ -2,162 +2,99 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { AppShell } from '@/components/layout/AppShell'
-import Link from 'next/link'
-import {
-  Loader2, FileText, ExternalLink, CheckCircle2,
-  AlertTriangle, Clock, ChevronRight, UserCheck,
-} from 'lucide-react'
-// import { config } from '@/lib/config'
-// import { TokenStore } from '@/services/api'
+import Link from 'next/dist/client/link'
+import { Loader2, FileText, ExternalLink, ChevronRight, AlertCircle, Zap } from 'lucide-react'
+import { config } from '@/lib/config'
+import { TokenStore } from '@/services/api'
 import { useCurrentUser } from '@/hooks'
-import type { AuditFormDetail } from '@/types/polaris'
-import { mockAuditDetails, mockAuditors } from '@/utils/mockData'
 
-function DetailField({ label, value }: { label: string; value?: string | null }) {
-  return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-[11.5px] font-semibold text-slate-500 uppercase tracking-wide">{label}</span>
-      <span className="text-[13.5px] text-slate-800">{value || '—'}</span>
-    </div>
-  )
-}
-
-function AiStatusPill({ status }: { status: string }) {
-  const map: Record<string, { cls: string; label: string }> = {
-    not_started: { cls: 'bg-slate-100 text-slate-500', label: 'Not Started' },
-    pending:     { cls: 'bg-slate-100 text-slate-500', label: 'Not Started' },
-    fetching:    { cls: 'bg-blue-100 text-blue-700',   label: 'Fetching' },
-    identifying: { cls: 'bg-blue-100 text-blue-700',   label: 'Identifying' },
-    parsing:     { cls: 'bg-blue-100 text-blue-700',   label: 'Parsing' },
-    auditing:    { cls: 'bg-blue-100 text-blue-700',   label: 'Auditing' },
-    summarising: { cls: 'bg-blue-100 text-blue-700',   label: 'Summarising' },
-    exporting:   { cls: 'bg-blue-100 text-blue-700',   label: 'Exporting' },
-    done:        { cls: 'bg-emerald-100 text-emerald-700', label: 'Completed' },
-    failed:      { cls: 'bg-red-100 text-red-700',     label: 'Failed' },
-  }
-  const { cls, label } = map[status] ?? { cls: 'bg-slate-100 text-slate-600', label: status }
-  const spinning = ['fetching','identifying','parsing','auditing','summarising','exporting'].includes(status)
-  return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold ${cls}`}>
-      {status === 'done' && <CheckCircle2 size={13} />}
-      {status === 'failed' && <AlertTriangle size={13} />}
-      {spinning && <Loader2 size={13} className="animate-spin" />}
-      {(status === 'not_started' || status === 'pending') && <Clock size={13} />}
-      {label}
-    </span>
-  )
-}
-
-// ─── Assign Auditor Panel (admin only) ────────────────────────────────────────
-function AssignAuditorPanel({
-  sessionId,
-  currentAuditorName,
-  currentAuditorEmail,
-}: {
-  sessionId: string
-  currentAuditorName?: string | null
-  currentAuditorEmail?: string | null
+function FormField({ label, value, fullWidth }: {
+  label: string; value?: string | null; fullWidth?: boolean
 }) {
-  const [auditors, setAuditors] = useState<{ user_id: string; user_name: string; azure_email: string }[]>([])
-  const [selected, setSelected] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [done, setDone] = useState(false)
-
-  useEffect(() => {
-      setAuditors(mockAuditors)
-
-    if (currentAuditorEmail) {
-      const currentAuditor = mockAuditors.find(
-        auditor => auditor.azure_email === currentAuditorEmail
-      )
-
-      if (currentAuditor) {
-        setSelected(currentAuditor.user_id)
-      }
-    }
-  }, [currentAuditorEmail])
-
-  const assign = async () => {
-    if (!selected) return
-
-    setSaving(true)
-
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    setDone(true)
-    setSaving(false)
-  }
-
   return (
-    <div className="bg-white border border-slate-200 rounded-lg shadow-sm mb-5 p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <UserCheck size={16} className="text-blue-600" />
-        <h2 className="text-[15px] font-semibold text-slate-800">Assign Auditor</h2>
-        {currentAuditorName && (
-          <span className="ml-auto text-[12px] text-slate-500">
-            Currently: <strong className="text-slate-700">{currentAuditorName}</strong>
-          </span>
-        )}
+    <div className={`flex flex-col gap-1 ${fullWidth ? 'col-span-2' : ''}`}>
+      <label className="text-[13px] font-semibold text-slate-700">{label}</label>
+      <div className="px-3 py-2.5 border border-slate-300 rounded bg-white text-[13.5px] text-slate-800 min-h-[40px]">
+        {value || <span className="text-slate-400 italic">—</span>}
       </div>
-      {done ? (
-        <div className="flex items-center gap-2 text-emerald-600 text-[13px]">
-          <CheckCircle2 size={16} /> Auditor assigned successfully
-        </div>
-      ) : (
-        <div className="flex gap-3 items-center">
-          <select value={selected} onChange={e => setSelected(e.target.value)}
-            className="flex-1 px-3 py-2 text-[13.5px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">{currentAuditorName}</option>
-            {auditors.map(a => (
-              <option key={a.user_id} value={a.user_id}>{a.user_name} ({a.azure_email})</option>
-            ))}
-          </select>
-          <button onClick={assign} disabled={!selected || saving}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-1.5">
-            {saving && <Loader2 size={13} className="animate-spin" />}
-            Assign
-          </button>
-        </div>
-      )}
-      {auditors.length === 0 && (
-        <p className="text-[12px] text-slate-400 mt-2">
-          No auditors found. Add users with the "Auditor" Azure AD app role.
-        </p>
-      )}
     </div>
+  )
+}
+
+// Status pill for AI audit pipeline status
+function AiStatusPill({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    pending:  'bg-yellow-50 text-yellow-700 border-yellow-200',
+    done:     'bg-green-50  text-green-700  border-green-200',
+    failed:   'bg-red-50    text-red-700    border-red-200',
+    running:  'bg-blue-50   text-blue-700   border-blue-200',
+  }
+  const colour = map[status] ?? 'bg-slate-50 text-slate-600 border-slate-200'
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${colour}`}>
+      {status}
+    </span>
   )
 }
 
 export default function ProjectDetailsPage() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const { data: currentUser } = useCurrentUser()
-  const [detail, setDetail] = useState<AuditFormDetail | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [detail, setDetail]   = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState<string | null>(null)
+
+  // RBAC guard — admins and auditors only
+  const canAccess = !currentUser || currentUser.role === 'admin' || currentUser.role === 'auditor'
 
   useEffect(() => {
     if (!sessionId) return
-
-    const mockDetail = mockAuditDetails[sessionId]
-
-    if (mockDetail) {
-      setDetail(mockDetail)
-      setError(null)
-    } else {
-      setDetail(null)
-      setError('Audit not found')
-    }
+    fetch(`${config.apiUrl}/polaris/audit/${sessionId}/details`, {
+      headers: { Authorization: `Bearer ${TokenStore.getAccess() ?? ''}` },
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(`Error ${r.status}`))
+      .then(setDetail)
+      .catch(e => setError(String(e)))
+      .finally(() => setLoading(false))
   }, [sessionId])
 
-  if (loading) return <AppShell><div className="flex items-center justify-center min-h-[50vh]"><Loader2 size={28} className="animate-spin text-blue-500" /></div></AppShell>
-  if (error || !detail) return <AppShell><div className="p-6 text-red-600">{error ?? 'Not found'}</div></AppShell>
+  if (!canAccess) {
+    return (
+      <AppShell>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 text-center">
+          <AlertCircle size={40} className="text-slate-300" />
+          <h2 className="text-lg font-semibold text-slate-700">Access Restricted</h2>
+          <p className="text-slate-500 text-sm">You don't have permission to view this page.</p>
+          <Link href="/home" className="text-blue-600 hover:underline text-sm mt-2">Go to Home</Link>
+        </div>
+      </AppShell>
+    )
+  }
 
-  const isAdmin = currentUser?.role === 'admin'
+  if (loading) return (
+    <AppShell>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <Loader2 size={28} className="animate-spin text-blue-500" />
+      </div>
+    </AppShell>
+  )
+  if (error || !detail) return (
+    <AppShell><div className="p-6 text-red-600">{error ?? 'Not found'}</div></AppShell>
+  )
+
   const isStarAudit = detail.audit_type === 'STAR'
+
+  // "Get AI Review" URL — uses the real SP item ID so the pipeline can
+  // call get_audit_context(item_id) to fetch project + documents from SharePoint.
+  // Falls back to session-only view if SP item ID is not yet available.
+  const aiReviewUrl = detail.sharepoint_item_id
+    ? `/ai-audit?item_id=${encodeURIComponent(detail.sharepoint_item_id)}`
+    : null
 
   return (
     <AppShell>
-      <div className="flex items-center gap-1.5 text-[12px] text-slate-400 mb-4">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-1.5 text-[12px] text-slate-400 mb-5">
         <Link href="/home" className="hover:text-blue-600">Home</Link>
         <span>›</span>
         <Link href="/audit/start" className="hover:text-blue-600">Start Audit</Link>
@@ -165,98 +102,139 @@ export default function ProjectDetailsPage() {
         <span className="text-slate-600">Project Details</span>
       </div>
 
-      <div className="flex items-start justify-between mb-6 gap-4">
+      {/* Header row: client name + AI status + Get AI Review button */}
+      <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">{detail.client_name}</h1>
           <p className="text-[14px] text-slate-500">{detail.project_name}</p>
         </div>
-        {detail.ai_audit_score != null && (
-          <div className="flex-shrink-0 bg-white border border-slate-200 rounded-lg px-5 py-3 text-center shadow-sm">
-            <div className="text-2xl font-bold text-slate-900">
-              {detail.ai_audit_score.toFixed(1)} <small className="text-[14px] text-slate-400 font-normal">/ 5</small>
-            </div>
-            <div className="text-[11px] text-slate-500 uppercase tracking-wide mt-0.5">AI Score</div>
-          </div>
-        )}
-      </div>
 
-      {/* Admin: assign auditor panel */}
-      {isAdmin && <AssignAuditorPanel sessionId={sessionId!} currentAuditorName={detail.assigned_auditor_name} currentAuditorEmail={detail.assigned_auditor_email} />}
-
-      {/* AI Audit Status */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-sm mb-5">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-[15px] font-semibold text-slate-800">AI Document Audit</h2>
-        </div>
-        <div className="p-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <AiStatusPill status={detail.ai_audit_status} />
-            {detail.ai_audit_score != null && (
-              <span className="text-[13px] text-slate-600">Score: <strong>{detail.ai_audit_score.toFixed(1)} / 5</strong></span>
-            )}
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* AI pipeline status badge */}
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[11px] text-slate-400 font-medium">AI Audit Status</span>
+            <AiStatusPill status={detail.ai_audit_status ?? 'pending'} />
           </div>
+
+          {/* Get AI Review — only shown when SP item ID is available */}
+          {aiReviewUrl ? (
+            <a
+              href={aiReviewUrl}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-semibold rounded-lg transition-colors"
+            >
+              <Zap size={14} />
+              Get AI Review
+            </a>
+          ) : (
+            <span className="text-[12px] text-slate-400 italic">AI Review not yet available</span>
+          )}
+
+          {/* View report if AI audit is done */}
           {detail.ai_audit_report_url && (
-            <a href={detail.ai_audit_report_url} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-[12.5px] font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors">
-              AI Doc Review Report <ExternalLink size={12} />
+            <a
+              href={detail.ai_audit_report_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-300 hover:border-slate-400 text-slate-700 text-[13px] font-semibold rounded-lg transition-colors"
+            >
+              <ExternalLink size={13} />
+              View AI Report
             </a>
           )}
         </div>
       </div>
 
-      {/* Project details */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-sm mb-5">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-[15px] font-semibold text-slate-800">Project Information</h2>
+      {/* Form fields card */}
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 mb-5">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+          {isStarAudit ? (
+            <>
+              <FormField label="Estimated SOW Signed Date"        value={detail.sow_signed_date} />
+              <FormField label="Project Start Date (as per SOW)"  value={detail.project_start_date} />
+              <FormField label="Project End Date (as per SOW)"    value={detail.project_end_date} />
+              <FormField label="Project Duration (in months)"     value={detail.project_duration_months} />
+              <FormField label="Project Duration (in weeks)"      value={detail.project_duration_weeks} />
+              <FormField label="Estimated Budget (as per SOW) ($)" value={detail.estimated_budget} />
+              <FormField label="Estimated Project Margin (%)"     value={detail.estimated_project_margin} />
+              <FormField label="Discount Provided?"               value={detail.discount_provided} />
+              <FormField label="Discount (%)"                     value={detail.discount_percentage} />
+              <FormField label="Discount Approver's Email"        value={detail.discount_approver_email} />
+              <FormField label="Project Details"                  value={detail.project_details} fullWidth />
+            </>
+          ) : (
+            <>
+              <FormField label="SOW Signed Date"              value={detail.sow_signed_date} />
+              <FormField label="Phase"                        value={detail.phase} />
+              <FormField label="Project Start Date"           value={detail.project_start_date} />
+              <FormField label="Project End Date"             value={detail.project_end_date} />
+              <FormField label="Actual Project Start Date"    value={detail.actual_project_start_date} />
+              <FormField label="Estimated Project End Date"   value={detail.estimated_project_end_date} />
+              <FormField label="Project Duration (months)"    value={detail.project_duration_months} />
+              <FormField label="Project Duration (weeks)"     value={detail.project_duration_weeks} />
+              <FormField label="Estimated Budget ($)"         value={detail.estimated_budget} />
+              <FormField label="Consumed Budget ($)"          value={detail.consumed_budget} />
+              <FormField label="Current Project Margin (%)"   value={detail.current_project_margin} />
+              <FormField label="SharePoint Link"              value={detail.sharepoint_link} fullWidth />
+              <FormField label="Project Details"              value={detail.project_details} fullWidth />
+            </>
+          )}
         </div>
-        <div className="p-5 grid grid-cols-2 md:grid-cols-3 gap-5">
-          <DetailField label="Client Name" value={detail.client_name} />
-          <DetailField label="Project Name" value={detail.project_name} />
-          <DetailField label="Project Code" value={detail.project_code} />
-          <DetailField label="Project Manager" value={detail.project_manager} />
-          <DetailField label="Audit Type" value={detail.audit_type} />
-          <DetailField label="Phase" value={detail.phase} />
-          <DetailField label="SOW Signed Date" value={detail.sow_signed_date} />
-          <DetailField label="Project Start Date" value={detail.project_start_date} />
-          <DetailField label="Project End Date" value={detail.project_end_date} />
-          <DetailField label="Estimated Budget" value={detail.estimated_budget} />
-        </div>
-      </div>
 
-      {/* Documents */}
-      {detail.documents.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-lg shadow-sm mb-5">
-          <div className="px-5 py-4 border-b border-slate-100">
-            <h2 className="text-[15px] font-semibold text-slate-800">Documents ({detail.documents.length})</h2>
-          </div>
-          <div className="divide-y divide-slate-100">
-            {detail.documents.map(doc => (
-              <div key={doc.document_id} className="flex items-center gap-3 px-5 py-3.5">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                  <FileText size={14} className="text-blue-600" />
+        {/* Documents list */}
+        {detail.documents?.length > 0 && (
+          <div className="mt-6 pt-5 border-t border-slate-100">
+            <p className="text-[13px] font-semibold text-slate-700 mb-3">Submitted Documents</p>
+            <div className="flex flex-col gap-3">
+              {detail.documents.map((doc: any) => (
+                <div key={doc.document_id ?? doc.file_name} className="flex items-center gap-3 group">
+                  <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                    <FileText size={16} className="text-slate-500" />
+                  </div>
+                  <span className="flex-1 text-[13.5px] text-slate-700 truncate">{doc.file_name}</span>
+                  {doc.sharepoint_url ? (
+                    <a href={doc.sharepoint_url} target="_blank" rel="noopener noreferrer"
+                      className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-semibold rounded-lg transition-colors">
+                      View Document <ExternalLink size={13} />
+                    </a>
+                  ) : (
+                    <span className="text-[12px] text-slate-400 italic">No link available</span>
+                  )}
                 </div>
-                <span className="flex-1 text-[13.5px] text-slate-700 truncate">{doc.file_name}</span>
-                {doc.sharepoint_url ? (
-                  <a href={doc.sharepoint_url} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-blue-600 border border-blue-200 rounded hover:bg-blue-50 transition-colors">
-                    View <ExternalLink size={11} />
-                  </a>
-                ) : <span className="text-[12px] text-slate-300">No link</span>}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-3 mt-2">
-        <Link href={`/audit/start/${sessionId}/findings`}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[13.5px] font-semibold rounded-lg transition-colors">
-          Upload Findings <ChevronRight size={14} />
-        </Link>
-        <Link href="/audit/start" className="text-[13px] text-slate-500 hover:text-slate-700">
-          Back to queue
-        </Link>
+        {/* Auditor assignment info */}
+        {detail.assigned_auditor_name && (
+          <div className="mt-5 pt-4 border-t border-slate-100">
+            <p className="text-[12px] text-slate-500 font-medium mb-1">Assigned Auditor</p>
+            <p className="text-[13.5px] text-slate-800 font-semibold">{detail.assigned_auditor_name}</p>
+            {detail.assigned_auditor_email && (
+              <p className="text-[12px] text-slate-500">{detail.assigned_auditor_email}</p>
+            )}
+          </div>
+        )}
+
+        {/* Bottom action row */}
+        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-3 flex-wrap">
+          <Link
+            href={`/audit/start/${sessionId}/findings`}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white text-[14px] font-semibold rounded-lg transition-colors"
+          >
+            Upload Findings <ChevronRight size={16} />
+          </Link>
+
+          {aiReviewUrl && (
+            <a
+              href={aiReviewUrl}
+              className="inline-flex items-center gap-2 px-5 py-3 border border-blue-300 hover:border-blue-500 text-blue-700 text-[13.5px] font-semibold rounded-lg transition-colors"
+            >
+              <Zap size={14} />
+              Get AI Review
+            </a>
+          )}
+        </div>
       </div>
     </AppShell>
   )
