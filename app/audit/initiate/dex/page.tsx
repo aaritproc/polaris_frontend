@@ -99,6 +99,16 @@ export default function InitiateDexAuditPage() {
 
       const data = await res.json()
 
+      await fetch(`${config.apiUrl}/audit/notify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${TokenStore.getAccess() ?? ''}`,
+        },
+        body: JSON.stringify({
+          fullName: form.project_manager,
+        }),
+      })
       // Navigate to the success/next page, passing both IDs
       router.push(
         `/audit/initiate/dex/next?session_id=${encodeURIComponent(data.session_id)}&item_id=${encodeURIComponent(data.sharepoint_item_id ?? '')}`
