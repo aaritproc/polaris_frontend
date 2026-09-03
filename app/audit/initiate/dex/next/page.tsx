@@ -12,7 +12,7 @@ export default function DexNextPage() {
   return (
     <AppShell>
       <div className="min-h-[70vh] flex items-center justify-center">
-        <div className="text-center max-w-2xl px-6">
+        <div className="text-center max-w-2xl px-8 py-10 bg-blue-50 border border-blue-100 rounded-xl">
 
           <h1 className="text-2xl font-semibold text-slate-900 mb-4">
             Your Audit Request has been Submitted!
