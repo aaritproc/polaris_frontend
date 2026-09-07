@@ -9,6 +9,8 @@ function ArticleCard({
   title,
   description,
   href,
+  target,
+  rel,
   btnColor,
   btnLabel = 'Read Now',
 }: {
@@ -17,6 +19,8 @@ function ArticleCard({
   title: string
   description: string
   href: string
+  target: string
+  rel: string
   btnColor: string
   btnLabel?: string
 }) {
@@ -29,6 +33,8 @@ function ArticleCard({
       <p className="text-[13px] text-slate-500 leading-relaxed flex-1 m-0">{description}</p>
       <a
         href={href}
+        target={target}
+        rel={rel}
         className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded text-[13px] font-semibold text-white transition-colors self-start ${btnColor}`}
       >
         {btnLabel} <ChevronRight size={13} />
@@ -42,7 +48,7 @@ export default function AuditProcessPage() {
     <AppShell>
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-[12px] text-slate-400 mb-4">
-        <Link href="/home" className="hover:text-blue-600">Home</Link>
+        <Link href="/audit" className="hover:text-blue-600">Audit</Link>
         <span>›</span>
         <span className="text-slate-600">Audit Process</span>
       </div>
@@ -75,6 +81,8 @@ export default function AuditProcessPage() {
           title="Audit Overview & Introduction"
           description="What the DEX Audit is, why it matters, and who is involved"
           href={process.env.NEXT_PUBLIC_AUDIT_OVERVIEW_URL!}
+          target="_blank"
+          rel="noopener noreferrer"
           btnColor="bg-rose-700 hover:bg-rose-800"
         />
         <ArticleCard
@@ -83,6 +91,8 @@ export default function AuditProcessPage() {
           title="Pre-requisites Checklist"
           description="Documents and artefacts required before requesting an audit"
           href={process.env.NEXT_PUBLIC_PREREQUISITES_URL!}
+          target="_blank"
+          rel="noopener noreferrer"
           btnColor="bg-blue-600 hover:bg-blue-700"
         />
         <ArticleCard
@@ -91,6 +101,8 @@ export default function AuditProcessPage() {
           title="Scoring Rubric"
           description="How scores are calculated across different metrics"
           href={process.env.NEXT_PUBLIC_SCORING_RUBRIC_URL!}
+          target="_blank"
+          rel="noopener noreferrer"
           btnColor="bg-green-700 hover:bg-green-800"
         />
       </div>
