@@ -133,7 +133,7 @@ export function Sidebar() {
               <div className="flex items-center gap-0.5">
                 {/* Clicking the label navigates if href is set */}
                 {item.href ? (
-                  <Link href={item.href} target = "_blank" rel="noopener noreferrer"
+                  <Link href={item.href} //target = "_blank" rel="noopener noreferrer"
                     className={cn('sidebar-item flex-1', anyActive ? 'active' : 'inactive')}>
                     <GroupIcon size={17} className="flex-shrink-0" />
                     <span className="truncate">{item.groupLabel}</span>
