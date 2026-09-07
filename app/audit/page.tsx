@@ -13,6 +13,8 @@ interface AuditOption {
   description: string
   buttonText: string
   href: string
+  target?: string
+  rel?: string
   icon: React.ElementType
   // 'all' = everyone | 'admin_auditor' = admin or auditor only
   visibility: 'all' | 'admin_auditor'
@@ -30,7 +32,7 @@ const AUDIT_OPTIONS: AuditOption[] = [
   {
     id: 'overall-history',
     description: 'History showing all the audits',
-    buttonText: 'Overall Audit History',
+    buttonText: 'Project Audit History',
     href: '/overall-history',
     icon: History,
     visibility: 'all',
@@ -56,6 +58,8 @@ const AUDIT_OPTIONS: AuditOption[] = [
     description: 'Check out the calendar for schedule',
     buttonText: 'Audit Schedule',
     href: process.env.NEXT_PUBLIC_AUDIT_SCHEDULE_URL!,
+    target: '_blank',
+    rel: 'noopener noreferrer',
     icon: Calendar,
     visibility: 'all',
   },
@@ -113,8 +117,8 @@ export default function AuditPage() {
                 </div>
 
                 {/* Button — fixed width so all are the same */}
-                <Link href={opt.href} className="flex-shrink-0 sm:self-center">
-                  <button className="w-52 px-4 py-2 text-[13px] font-semibold text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors text-center">
+                <Link href={opt.href} className="flex-shrink-0 sm:self-center" target={opt.target} rel={opt.rel}>
+                  <button className="w-52 px-4 py-2 text-[13px] font-semibold text-white border border-blue-200 rounded-lg bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors text-center">
                     {opt.buttonText}
                   </button>
                 </Link>
