@@ -10,7 +10,7 @@ import {
 import { useUIStore } from '@/store'
 import { useState } from 'react'
 
-type NavLeaf  = { href: string; label: string; icon: React.ElementType }
+type NavLeaf  = { href: string; label: string; icon: React.ElementType; target?: string; rel?: string }
 type NavGroup = { groupLabel: string; icon: React.ElementType; href?: string; children: NavLeaf[] }
 type NavItem  = NavLeaf | NavGroup
 
@@ -25,9 +25,9 @@ const NAV: NavItem[] = [
     icon: BookOpen,
     href: '/knowledge-library',
     children: [
-      { href: '/newsletters',      label: 'Newsletters',          icon: Newspaper },
-      { href: process.env.NEXT_PUBLIC_DEX_STAR_KNOWLEDGE_URL!,                 label: 'DEX & STAR Knowledge', icon: Library },
-      { href: process.env.NEXT_PUBLIC_LEADERSHIP_SUMMARY_URL!,                 label: 'Leadership Summary',   icon: Users },
+      { href: '/newsletters',                                                  label: 'Newsletters',          icon: Newspaper, target: '_self' },
+      { href: process.env.NEXT_PUBLIC_DEX_STAR_KNOWLEDGE_URL!,                 label: 'DEX & STAR Knowledge', icon: Library,   target: '_blank', rel: 'noopener noreferrer' },
+      { href: process.env.NEXT_PUBLIC_LEADERSHIP_SUMMARY_URL!,                 label: 'Leadership Summary',   icon: Users,     target: '_blank', rel: 'noopener noreferrer' },
     ],
   },
 
@@ -37,8 +37,8 @@ const NAV: NavItem[] = [
     icon: Library,
     href: '/dex-star',
     children: [
-      { href: process.env.NEXT_PUBLIC_STANDARD_PRACTICES_URL!, label: 'Standard Practices', icon: Lightbulb },
-      { href: process.env.NEXT_PUBLIC_SAMPLE_DOCUMENTS_URL!, label: 'Sample Documents',   icon: FolderOpen },
+      { href: process.env.NEXT_PUBLIC_STANDARD_PRACTICES_URL!, label: 'Standard Practices', icon: Lightbulb, target: '_blank', rel: 'noopener noreferrer' },
+      { href: process.env.NEXT_PUBLIC_SAMPLE_DOCUMENTS_URL!, label: 'Sample Documents',   icon: FolderOpen, target: '_blank', rel: 'noopener noreferrer' },
     ],
   },
 
@@ -48,9 +48,9 @@ const NAV: NavItem[] = [
     icon: ClipboardList,
     href: '/audit',
     children: [
-      { href: '/audit/process',   label: 'Audit Process',         icon: FileText },
-      { href: '/ai-history',      label: 'AI Audit History',      icon: History },
-      { href: '/overall-history', label: 'Project Audit History', icon: History },
+      { href: '/audit/process',   label: 'Audit Process',         icon: FileText, target: '_self' },
+      { href: '/ai-history',      label: 'AI Audit History',      icon: History,  target: '_self' },
+      { href: '/overall-history', label: 'Project Audit History', icon: History,  target: '_self' },
     ],
   },
 ]
@@ -101,7 +101,7 @@ export function Sidebar() {
             const isAct = active(item.href)
             const Icon  = item.icon
             return (
-              <Link key={item.href} href={item.href} target = "_blank" rel="noopener noreferrer"
+              <Link key={item.href} href={item.href} target={item.target} rel={item.rel}
                 title={sidebarCollapsed ? item.label : undefined}
                 className={cn('sidebar-item', isAct ? 'active' : 'inactive', sidebarCollapsed && 'justify-center px-0')}>
                 <Icon size={17} className="flex-shrink-0" />
@@ -120,7 +120,7 @@ export function Sidebar() {
               const CIcon = child.icon
               const isAct = active(child.href)
               return (
-                <Link key={child.href} href={child.href} title={child.label}
+                <Link key={child.href} href={child.href} title={child.label} target={child.target} rel={child.rel}
                   className={cn('sidebar-item justify-center px-0', isAct ? 'active' : 'inactive')}>
                   <CIcon size={17} className="flex-shrink-0" />
                 </Link>
@@ -162,7 +162,7 @@ export function Sidebar() {
                     const CIcon = child.icon
                     const isAct = active(child.href)
                     return (
-                      <Link key={child.href} href={child.href} target = "_blank" rel="noopener noreferrer"
+                      <Link key={child.href} href={child.href} target={child.target} rel={child.rel}
                         className={cn('sidebar-item text-[12px]', isAct ? 'active' : 'inactive')}>
                         <CIcon size={14} className="flex-shrink-0" />
                         <span className="truncate">{child.label}</span>
