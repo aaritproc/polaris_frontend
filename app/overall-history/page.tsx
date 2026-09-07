@@ -163,10 +163,10 @@ export default function OverallAuditHistoryPage() {
             <span>›</span>
             <Link href="/audit" className="hover:text-blue-600">Audit</Link>
             <span>›</span>
-            <span>Overall Audit History</span>
+            <span>Project Audit History</span>
           </div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-slate-900">Overall Audit History</h1>
+            <h1 className="text-xl font-bold text-slate-900">Project Audit History</h1>
             {currentUser?.role === 'admin' && (
               <span className="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-700 rounded-full">Admin View</span>
             )}
