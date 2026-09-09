@@ -28,7 +28,7 @@ interface OverallAuditRow {
   overall_status: string
   has_report: boolean
   report_url?: string | null
-  assigned_auditor_name?: string | null
+  assigned_auditor_name?: string | string[] | null
 }
 
 function AiStatusBadge({ status }: { status: string }) {
@@ -205,7 +205,7 @@ export default function OverallAuditHistoryPage() {
         <table className="w-full text-[13px] min-w-[1050px]">
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50/60">
-              {['Client', 'Project', 'Code', 'Type', 'Submitted', 'Auditor', 'AI Status', 'AI Score', 'Manual Score', 'Status', ''].map(h => (
+              {['Client', 'Project', 'Code', 'Type', 'Submitted', 'Auditor/s', 'AI Status', 'AI Score', 'Manual Score', 'Status', ''].map(h => (
                 <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
               ))}
             </tr>

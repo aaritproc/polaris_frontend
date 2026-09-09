@@ -454,8 +454,8 @@ export default function UploadFindingsPage() {
   const { data: currentUser } = useCurrentUser()
 
   const [categories, setCategories] = useState<CategoryState[]>(buildInitial())
-  const [auditorName, setAuditorName]       = useState('')
-  const [auditorEmail, setAuditorEmail]     = useState('')
+  const [auditorName, setAuditorName]       = useState<any>(null)
+  const [auditorEmail, setAuditorEmail]     = useState<any>(null)
   const [overallRemarks, setOverallRemarks] = useState('')
   const [aiReportUrl, setAiReportUrl]       = useState<string | null>(null)
   const [manualReport, setManualReport] = useState<File | null>(null)

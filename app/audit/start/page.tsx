@@ -172,8 +172,8 @@ export interface QueueRow {
   ai_audit_status: string
   ai_audit_report_url: string | null
   overall_status: string
-  assigned_auditor_name: string | null
-  assigned_auditor_email: string | null
+  assigned_auditor_name: string | string[] | null
+  assigned_auditor_email: string | string[] | null
 }
 
 // ── Status label (matches image: "New" = pink, "Open" = purple) ───────────────
@@ -195,12 +195,12 @@ interface AssignModalProps {
   clientName: string
   projectName: string
   onClose: () => void
-  onAssigned: (name: string, email: string) => void
+  onAssigned: (name: string | string[], email: string | string[]) => void
 }
 
 function AssignAuditorModal({ sessionId, clientName, projectName, onClose, onAssigned }: AssignModalProps) {
-  const [email, setEmail] = useState('')
-  const [name, setName]   = useState('')
+  const [email, setEmail] = useState<any>(null)
+  const [name, setName]   = useState<any>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError]   = useState<string | null>(null)
 
@@ -343,7 +343,7 @@ export default function StartAuditPage() {
     )
   }
 
-  const handleAssigned = (sessionId: string, name: string, email: string) => {
+  const handleAssigned = (sessionId: string, name: string | string[], email: string | string[]) => {
     setRows(prev => prev.map(r =>
       r.session_id === sessionId
         ? { ...r, assigned_auditor_name: name, assigned_auditor_email: email }
@@ -370,7 +370,7 @@ export default function StartAuditPage() {
                 {[
                   'Client Name', 'Project Name', 'Project Code',
                   'DOCS Submitted', 'Audit Initiation Date', 'Audit Type',
-                  'Project Estimated Start Date', 'Assigned Auditor', 'AI Report', 'Audit Status', '',
+                  'Project Estimated Start Date', 'Assigned Auditor/s', 'AI Report', 'Audit Status', '',
                 ].map(h => (
                   <th key={h} className="text-center px-4 py-3.5 text-[12px] font-semibold whitespace-nowrap">
                     {h}
@@ -418,9 +418,19 @@ export default function StartAuditPage() {
                   <td className="px-4 py-4 text-center text-[13px]">
                     {row.assigned_auditor_name ? (
                       <div>
-                        <p className="text-slate-800 font-medium">{row.assigned_auditor_name}</p>
+                        {Array.isArray(row.assigned_auditor_name) ? (
+                          row.assigned_auditor_name.map((name, index) => (
+                            <p key={index} className="text-slate-800 font-medium">
+                              {name}
+                            </p>
+                          ))
+                        ) : (
+                          <p className="text-slate-800 font-medium">{row.assigned_auditor_name}</p>
+                        )}
                         {row.assigned_auditor_email && (
-                          <p className="text-slate-400 text-[11px]">{row.assigned_auditor_email}</p>
+                          <p className="text-slate-400 text-[11px]">
+                            {Array.isArray(row.assigned_auditor_email) ? row.assigned_auditor_email.join(', ') : row.assigned_auditor_email}
+                          </p>
                         )}
                       </div>
                     ) : (
