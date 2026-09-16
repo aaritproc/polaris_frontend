@@ -14,19 +14,22 @@ export default function DexNextPage() {
       <div className="min-h-[70vh] flex items-center justify-center">
         <div className="text-center max-w-2xl px-8 py-10 bg-blue-50 border border-blue-100 rounded-xl">
 
-          <h1 className="text-2xl font-semibold text-slate-900 mb-4">
+          <h1 className="text-2xl font-semibold text-slate-900 mb-10">
             Your Audit Request has been Submitted!
           </h1>
 
-          <p className="text-[15px] text-slate-600 leading-7 mb-8">
-            Storing your responses will take 2-3 mins. After that click
-            {' '}
-            <span className="font-semibold text-slate-800">
-              "Get AI Review"
-            </span>
-            {' '}
-            to view your audit.
-          </p>
+          <div className="text-left text-[15px] text-slate-600 leading-7 mb-8">
+            <h2 className="font-semibold text-slate-800 mb-3">
+              Instructions
+            </h2>
+
+            <ol className="list-decimal list-inside space-y-2">
+              <li>The completion of AI review is mandatory for an audit to be considered as completed.</li>
+              <li>Make sure you validate all your documents before starting the AI review since you won't be able to make changes once the review is initiated.</li>
+              <li>Manual audit will only start once the AI review is completed.</li>
+              <li>Each time an AI audit is executed, a costing occurs so make sure you don't use it too frequently.</li>
+            </ol>
+          </div>
 
           <a
             //type="button"

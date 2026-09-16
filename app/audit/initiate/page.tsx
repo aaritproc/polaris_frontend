@@ -1,9 +1,11 @@
 'use client'
+import { useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 
 export default function InitiateAuditPage() {
+  const[acknowledged, setAcknowledged] = useState(false)
   return (
     <AppShell>
       {/* Breadcrumb */}
@@ -15,6 +17,31 @@ export default function InitiateAuditPage() {
 
       <h1 className="text-2xl font-bold text-slate-900 mb-1">Initiate New Project Audit</h1>
       <p className="text-[14px] text-slate-500 mb-7">Choose the type of audit you would like to initiate</p>
+
+      <div className="mb-8 rounded-lg bg-blue-100 border border-slate-200 p-5">
+        <h2 className="text-[16px] font-semibold text-slate-900 mb-3">
+          Instructions
+        </h2>
+
+        <ol className="list-decimal list-inside space-y-2 text-[14px] text-slate-600">
+          <li>Initiate the audit request early. Reach out as soon as the project is confirmed.</li>
+          <li>Keep all the required documents prepared for SharePoint before the audit.</li>
+          <li>Go through the AI audit once you have submitted the details form.</li>
+          <li>Don't upload DEX documents for a STAR audit and vice versa or else scoring accuracy may be affected.</li>
+          <li>Make sure not to upload more than 10 documents at a time for an audit.</li>
+          <li>Don't initiate an audit unless all the details are confirmed.</li>
+        </ol>
+
+        <label className="mt-5 flex items-center gap-2 cursor-pointer text-[14px] text-slate-700">
+          <input
+            type="checkbox"
+            checked={acknowledged}
+            onChange={(e) => setAcknowledged(e.target.checked)}
+            className="h-4 w-4"
+          />
+          <span>I acknowledge all the instructions given above.</span>
+        </label>
+      </div>
 
       <div className="flex gap-5 flex-wrap">
         {/* STAR */}
@@ -33,6 +60,11 @@ export default function InitiateAuditPage() {
           </p>
           <Link
             href="/audit/initiate/star"
+            onClick={(e) => {
+              if (!acknowledged) {
+                e.preventDefault()
+              }
+            }}
             className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-blue-900 hover:bg-blue-950 text-white text-[13px] font-semibold rounded transition-colors self-start"
           >
             Start STAR Audit <ChevronRight size={13} />
@@ -53,6 +85,11 @@ export default function InitiateAuditPage() {
           </p>
           <Link
             href="/audit/initiate/dex"
+            onClick={(e) => {
+              if (!acknowledged) {
+                e.preventDefault()
+              }
+            }}
             className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-semibold rounded transition-colors self-start"
           >
             Start DEX Audit <ChevronRight size={13} />
